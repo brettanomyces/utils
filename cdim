@@ -1,0 +1,48 @@
+#!/bin/bash
+# cd Improved
+# cd to the given directory or the directory containing the given file
+# Needs to use . cdim to run not in a subshell so that cd will work as
+# we want. "\" is used to ignore  the alias
+
+
+
+# echo the physical path, resolving symbolic links
+get_physical_path() {
+  if [ "$( \find "$1" -type l -maxdepth 0 2> /dev/null )" ]; then
+    # arg is a symbolic link
+    echo "$( \readlink "$1")"
+  else
+    echo "$1"
+  fi
+}
+
+# echo the given directory or the directory of the given file
+get_directory() {
+  if [ "$( \find -L "$1" -type f -maxdepth 0 2> /dev/null )" ]; then
+    # arg is a file
+    echo "$( \dirname "$1")"
+  else
+    echo "$1"
+  fi
+}
+
+# debugging
+# set -x
+
+if [ "$#" -eq 0 ]; then
+  builtin cd
+else
+  # -eq is used for numberic comparisons, = is for string comparisont
+  if [ "$#" -eq 1 ]; then
+    arg="$( get_directory "$1" )"
+  elif [ "$1" = "-P" ]; then
+    arg="$( get_directory "$( get_physical_path "$2" )" )"
+  elif [ "$1" = "-L" ]; then
+    arg="$( get_directory "$2" )"
+  else
+    # unexpected input
+    arg="$*"
+  fi
+  builtin cd "$arg" 1> /dev/null
+fi
+pwd
