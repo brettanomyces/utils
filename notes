@@ -1,4 +1,5 @@
 #!/bin/bash
 
 cd ~/Dropbox/university_2014/"$1"
-vim lecture_$(date +"%d_%m_%y").txt
+vim $(date +"%Y%m%d_lecture_%A_%d_%B.txt")
+
